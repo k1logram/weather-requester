@@ -18,16 +18,16 @@ async def export_to_excel():
 
     worksheet.append(TABLE_HEADERS)
 
-    await append_weather_data(worksheet, weather_data)
+    append_weather_data(worksheet, weather_data)
 
     workbook.save(EXPORT_FILENAME)
     print('Data export completed successfully')
     print('Total records -', records_count_total)
 
 
-async def append_weather_data(worksheet, weather_data):
+def append_weather_data(worksheet, weather_data):
     for weather_row in weather_data:
-        precipitation = await unpacking_precipitation(weather_row.precipitation)
+        precipitation = unpacking_precipitation(weather_row.precipitation)
         worksheet.append([
             weather_row.temperature,
             weather_row.wind_speed,
@@ -38,7 +38,7 @@ async def append_weather_data(worksheet, weather_data):
         ])
 
 
-async def unpacking_precipitation(input_precipitation):
+def unpacking_precipitation(input_precipitation):
     output_precipitation = f'''Дождь - {input_precipitation["rain"]}
 Ливень - {input_precipitation["showers"]}
 Снег - {input_precipitation["snowfall"]}'''

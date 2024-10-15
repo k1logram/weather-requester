@@ -22,7 +22,7 @@ async def create_tables():
         await conn.run_sync(Base.metadata.create_all)
 
 
-async def write_current_current_weather(current_weather: dict):
+async def write_current_weather(current_weather: dict):
     async with async_session() as session:
         new_weather_data = WeatherData(
             temperature=current_weather['temperature'],
