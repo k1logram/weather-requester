@@ -4,7 +4,7 @@ import db
 
 
 WEATHER_URL = 'http://api.open-meteo.com/v1/forecast'
-WEATHER_UPDATE_DELAY_SECONDS = 10
+WEATHER_UPDATE_DELAY_SECONDS = 180
 SCOLTECH_LATITUDE = '55.699037'
 SCOLTECH_LONGITUDE = '37.359755'
 
@@ -31,13 +31,6 @@ async def fetch_weather(latitude, longitude):
     async with aiohttp.ClientSession() as session:
         async with session.post(WEATHER_URL, data=data) as response:
             data = await response.json()
-            print('температура -', data['current']['temperature_2m'])
-            print('скорость ветра -', data['current']['wind_speed_10m'])
-            print('направление ветра -', data['current']['wind_direction_10m'])
-            print('атмо давление -', data['current']['surface_pressure'])
-            print('снег -', sum(data['minutely_15']['snowfall']))
-            print('дождь -', sum(data['minutely_15']['rain']))
-            print('ливень -', sum(data['minutely_15']['showers']))
             return await response.json()
 
 
@@ -87,12 +80,3 @@ async def get_wind_direction(wind_degree):
         return 'З'
     elif 292.5 <= wind_degree < 337.5:
         return 'СЗ'
-
-
-if __name__ == '__main__':
-    asyncio.run(fetch_weather())
-
-
-
-
-
