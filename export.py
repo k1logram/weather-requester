@@ -1,6 +1,11 @@
 import asyncio
 import openpyxl
 import db
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger('export')
+
 
 TABLE_HEADERS = ['Температура', 'Скорость ветра', 'Направление ветра', 'Атмосферное давление', 'Осадки', 'Дата']
 EXPORT_FILENAME = 'weather_data.xlsx'
@@ -10,7 +15,7 @@ async def export_to_excel():
     weather_data = await db.select_weather_data()
     records_count_total = len(weather_data)
     if records_count_total == 0:
-        print('Weather data is empty')
+        logger.info('Weather data is empty')
         return
 
     workbook = openpyxl.Workbook()
@@ -21,8 +26,8 @@ async def export_to_excel():
     append_weather_data(worksheet, weather_data)
 
     workbook.save(EXPORT_FILENAME)
-    print('Data export completed successfully')
-    print('Total records -', records_count_total)
+    logger.info('Data export completed successfully')
+    logger.info(f'Total records - {records_count_total}', )
 
 
 def append_weather_data(worksheet, weather_data):

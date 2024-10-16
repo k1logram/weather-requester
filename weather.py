@@ -1,10 +1,15 @@
 import aiohttp
 import asyncio
 import db
+import logging
+
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger('weather')
 
 
 WEATHER_URL = 'http://api.open-meteo.com/v1/forecast'
-WEATHER_UPDATE_DELAY_SECONDS = 1
+WEATHER_UPDATE_DELAY_SECONDS = 20
 SCOLTECH_LATITUDE = '55.699037'
 SCOLTECH_LONGITUDE = '37.359755'
 
@@ -21,11 +26,11 @@ async def record_current_weather(latitude, longitude):
         if current_weather:
             unpacked_weather = await unpacking_weather_info(current_weather)
             await db.write_current_weather(unpacked_weather)
-            print('Weather is saved')
+            logger.info('Weather is saved')
         else:
-            print("No weather data available.")
+            logger.info("No weather data available.")
     except Exception as e:
-        print(f"An error occurred while recording current weather: {e}")
+        logger.info(f"An error occurred while recording current weather: {e}")
 
 
 async def fetch_weather(latitude, longitude):
@@ -41,10 +46,10 @@ async def fetch_weather(latitude, longitude):
                 if response.status == 200:
                     return await response.json()
                 else:
-                    print(f"HTTP Error: {response.status}")
+                    logger.info(f"HTTP Error: {response.status}")
                     return None
     except aiohttp.ClientError as e:
-        print(f"HTTP Client Error: {e}")
+        logger.info(f"HTTP Client Error: {e}")
         return None
 
 
@@ -71,9 +76,9 @@ async def unpacking_weather_info(input_weather_data):
 async def precipitation_unpacking(input_weather_data):
     precipitation = dict()
 
-    precipitation['snowfall'] = round(sum(input_weather_data['minutely_15']['snowfall']), -2)
-    precipitation['rain'] = round(sum(input_weather_data['minutely_15']['rain']), -2)
-    precipitation['showers'] = round(sum(input_weather_data['minutely_15']['showers']), -2)
+    precipitation['snowfall'] = sum(input_weather_data['minutely_15']['snowfall'])
+    precipitation['rain'] = sum(input_weather_data['minutely_15']['rain'])
+    precipitation['showers'] = sum(input_weather_data['minutely_15']['showers'])
 
     return precipitation
 
